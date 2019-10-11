@@ -1,5 +1,5 @@
-﻿//#define AUTO_EXECUTE_DEBUG
-
+﻿//警告の抑制
+#pragma warning disable CS0649
 using UnityEngine;
 #if UNITY_SWITCH  && !(UNITY_EDITOR)
 using nn.hid;
