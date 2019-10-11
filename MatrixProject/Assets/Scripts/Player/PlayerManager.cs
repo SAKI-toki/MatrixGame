@@ -55,11 +55,16 @@ public class PlayerManager : MonoBehaviour
     {
         //どのくらい追い越したらソートするか
         const float OverLength = 0.2f;
-        players.Sort(
-            (lhs, rhs) =>
-            ((int)(rhs.gameObject.transform.position.x + OverLength -
-            lhs.gameObject.transform.position.x))
-        );
+        for (int i = 0; i < players.Count - 1; ++i)
+        {
+            if (players[i].transform.position.x + OverLength <
+                players[i + 1].transform.position.x)
+            {
+                var temp = players[i];
+                players[i] = players[i + 1];
+                players[i + 1] = temp;
+            }
+        }
     }
 
     [SerializeField, Tooltip("カメラの中心のTransform")]
