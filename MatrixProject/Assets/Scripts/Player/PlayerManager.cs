@@ -17,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     ScrollController scrollController = null;
     //プレイヤーの数
     static int PlayerCount = 0;
+    //プレイヤーリスト
     List<PlayerController> players = new List<PlayerController>(PlayerCount);
 
     void Start()
@@ -24,6 +25,9 @@ public class PlayerManager : MonoBehaviour
 #if true
         PlayerCount = 4;
 #endif
+        //スクロールオブジェクトの生成
+        GameObject scrollObj = new GameObject("PlayerScroll");
+        scrollController.AddScrollList(scrollObj.AddComponent<PlayerScroll>());
         //プレイヤーの生成
         for (int i = 0; i < PlayerCount; ++i)
         {
@@ -31,56 +35,55 @@ public class PlayerManager : MonoBehaviour
             GameObject playerObject = Instantiate(playerPrefab,
                 new Vector3(GetPlayerFixedPositionX(i), 0, 0),
                 Quaternion.identity);
-            //コントローラーを取得
+            //リストに追加
             players.Add(playerObject.GetComponent<PlayerController>());
+            //プレイヤーの番号をセット
             players[i].playerNumber = i;
-            scrollController.AddScrollList(players[i]);
+            //スクロールするオブジェクトを親に設定
+            players[i].transform.parent = scrollObj.transform;
         }
+        //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
     }
 
+#if UNITY_EDITOR
+    [SerializeField]
+    int debugSwitchPlayerNumber = 0;
+    [SerializeField]
+    bool debugSwitch = false;
+#endif
+
     void Update()
     {
-        PlayerSort();
         for (int i = 0; i < players.Count; ++i)
         {
             players[i].MoveUpdate(GetPlayerFixedPositionX(i));
         }
-    }
-
-    /// <summary>
-    /// プレイヤーのソート
-    /// </summary>
-    void PlayerSort()
-    {
-        //どのくらい追い越したらソートするか
-        const float OverLength = 0.2f;
-        for (int i = 0; i < players.Count - 1; ++i)
+        //入れ替える
+        for (int i = 1; i < players.Count; ++i)
         {
-            if (players[i].transform.position.x + OverLength <
-                players[i + 1].transform.position.x)
+            if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
+#if UNITY_EDITOR
+            || (debugSwitch && debugSwitchPlayerNumber == i)
+#endif
+            )
             {
-                var temp = players[i];
-                players[i] = players[i + 1];
-                players[i + 1] = temp;
+#if UNITY_EDITOR
+                debugSwitch = false;
+#endif
+                var temp = players[0];
+                players[0] = players[i];
+                players[i] = temp;
+                break;
             }
         }
     }
 
-    [SerializeField, Tooltip("カメラの中心のTransform")]
-    Transform CenterTransform = null;
-    /// <summary>
-    /// 中心のX軸の座標を取得
-    /// </summary>
-    float GetCenterPositionX()
-    {
-        return CenterTransform.position.x;
-    }
     /// <summary>
     /// プレイヤーの定位置のX軸の座標を取得
     /// </summary>
     float GetPlayerFixedPositionX(int index)
     {
-        return GetCenterPositionX() + leadPositionX - interval * index;
+        return leadPositionX - interval * index;
     }
 }

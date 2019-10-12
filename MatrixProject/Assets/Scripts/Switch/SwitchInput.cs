@@ -439,5 +439,6 @@ public enum SwitchButton : long
     ZTrigger = 0x1 << 13,
 #endif
     Jump = SwitchButton.Down,
+    Switch = SwitchButton.Right,
     None = 0
 }

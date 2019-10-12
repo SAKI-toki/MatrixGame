@@ -4,7 +4,7 @@
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour, IScrollObject
+public class PlayerController : MonoBehaviour
 {
     [SerializeField, Tooltip("ジャンプ力")]
     float jumpPower = 10.0f;
@@ -16,7 +16,9 @@ public class PlayerController : MonoBehaviour, IScrollObject
     [SerializeField, Tooltip("地面に向けたレイの長さ")]
     float groundRayLength = 1.0f;
     new Rigidbody rigidbody;
+
     //プレイヤーの番号(0~3)
+    [System.NonSerialized]
     public int playerNumber = 0;
 
     void Start()
@@ -32,24 +34,24 @@ public class PlayerController : MonoBehaviour, IScrollObject
     /// <summary>
     /// 移動時の更新
     /// </summary>
-    public void MoveUpdate(float fixedPositionX)
+    public void MoveUpdate(float localFixedPositionX)
     {
-        FixedPositionMove(fixedPositionX);
+        FixedPositionMove(localFixedPositionX);
         Jump();
     }
 
     /// <summary>
     /// 定位置に寄せる
     /// </summary>
-    void FixedPositionMove(float fixedPositionX)
+    void FixedPositionMove(float localFixedPositionX)
     {
-        var position = rigidbody.position;
+        var position = transform.localPosition;
         //ある程度近くないと加速、減速する
-        if (Mathf.Abs(position.x - fixedPositionX) > 0.1f)
+        if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
         {
-            position.x = Mathf.Lerp(position.x, fixedPositionX, 0.03f);
+            position.x = Mathf.Lerp(position.x, localFixedPositionX, 0.06f);
         }
-        rigidbody.MovePosition(position);
+        transform.localPosition = position;
     }
 
     /// <summary>
@@ -69,11 +71,6 @@ public class PlayerController : MonoBehaviour, IScrollObject
     bool IsGround()
     {
         return Physics.Linecast(groundRayPoint.position, groundRayPoint.position - Vector3.up * groundRayLength);
-    }
-
-    void IScrollObject.Scroll(float scrollValueX)
-    {
-        rigidbody.MovePosition(rigidbody.position + Vector3.right * scrollValueX * Time.deltaTime);
     }
 
 }
