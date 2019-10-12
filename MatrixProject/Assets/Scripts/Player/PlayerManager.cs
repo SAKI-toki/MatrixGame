@@ -56,22 +56,26 @@ public class PlayerManager : MonoBehaviour
         {
             players[i].MoveUpdate(GetPlayerFixedPositionX(i));
         }
-        //入れ替える
-        for (int i = 1; i < players.Count; ++i)
+        //全てのプレイヤーが定位置にいなければ入れ替えができない
+        if (IsAllPlayerFixedPosition())
         {
-            if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
+            //入れ替える
+            for (int i = 1; i < players.Count; ++i)
+            {
+                if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
 #if UNITY_EDITOR
             || (debugSwitch && debugSwitchPlayerNumber == i)
 #endif
             )
-            {
+                {
 #if UNITY_EDITOR
-                debugSwitch = false;
+                    debugSwitch = false;
 #endif
-                var temp = players[0];
-                players[0] = players[i];
-                players[i] = temp;
-                break;
+                    var temp = players[0];
+                    players[0] = players[i];
+                    players[i] = temp;
+                    break;
+                }
             }
         }
     }
@@ -82,5 +86,17 @@ public class PlayerManager : MonoBehaviour
     float GetPlayerFixedPositionX(int index)
     {
         return leadPositionX - interval * index;
+    }
+
+    /// <summary>
+    /// 全てのプレイヤーが定位置かどうか
+    /// </summary>
+    bool IsAllPlayerFixedPosition()
+    {
+        for (int i = 0; i < players.Count; ++i)
+        {
+            if (!players[i].IsFixedPosition) return false;
+        }
+        return true;
     }
 }

@@ -6,11 +6,12 @@
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField, Range(0, 1), Tooltip("定位置に移動する速度")]
+    float fixedSpeed = 0.1f;
     [SerializeField, Tooltip("ジャンプ力")]
     float jumpPower = 10.0f;
     [SerializeField, Tooltip("重力")]
     float gravityPower = 15.0f;
-
     [SerializeField, Tooltip("地面に向けたレイを飛ばすポイント")]
     Transform groundRayPoint = null;
     [SerializeField, Tooltip("地面に向けたレイの長さ")]
@@ -20,6 +21,9 @@ public class PlayerController : MonoBehaviour
     //プレイヤーの番号(0~3)
     [System.NonSerialized]
     public int playerNumber = 0;
+    //定位置にいるかどうか
+    bool isFixedPosition = true;
+    public bool IsFixedPosition { get { return this.isFixedPosition; } }
 
     void Start()
     {
@@ -49,7 +53,15 @@ public class PlayerController : MonoBehaviour
         //ある程度近くないと加速、減速する
         if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
         {
-            position.x = Mathf.Lerp(position.x, localFixedPositionX, 0.06f);
+            //定位置に向かって移動する
+            position.x = Mathf.Lerp(position.x, localFixedPositionX, fixedSpeed);
+            //定位置ではない
+            isFixedPosition = false;
+        }
+        else
+        {
+            //定位置である
+            isFixedPosition = true;
         }
         transform.localPosition = position;
     }
