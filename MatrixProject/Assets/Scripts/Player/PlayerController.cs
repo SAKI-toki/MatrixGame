@@ -72,5 +72,4 @@ public class PlayerController : MonoBehaviour
     {
         return Physics.Linecast(groundRayPoint.position, groundRayPoint.position - Vector3.up * groundRayLength);
     }
-
 }

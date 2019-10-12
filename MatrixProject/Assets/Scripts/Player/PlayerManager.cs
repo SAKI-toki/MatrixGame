@@ -13,8 +13,8 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField, Tooltip("プレイヤーPrefab")]
     GameObject playerPrefab = null;
-    [SerializeField]
-    ScrollController scrollController = null;
+    [SerializeField, Tooltip("スクロールオブジェクト")]
+    GameObject scrollObject = null;
     //プレイヤーの数
     static int PlayerCount = 0;
     //プレイヤーリスト
@@ -25,9 +25,6 @@ public class PlayerManager : MonoBehaviour
 #if true
         PlayerCount = 4;
 #endif
-        //スクロールオブジェクトの生成
-        GameObject scrollObj = new GameObject("PlayerScroll");
-        scrollController.AddScrollList(scrollObj.AddComponent<PlayerScroll>());
         //プレイヤーの生成
         for (int i = 0; i < PlayerCount; ++i)
         {
@@ -40,7 +37,7 @@ public class PlayerManager : MonoBehaviour
             //プレイヤーの番号をセット
             players[i].playerNumber = i;
             //スクロールするオブジェクトを親に設定
-            players[i].transform.parent = scrollObj.transform;
+            players[i].transform.parent = scrollObject.transform;
         }
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
