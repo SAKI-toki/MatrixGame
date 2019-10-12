@@ -1,6 +1,4 @@
-﻿//#define AUTO_EXECUTE_DEBUG
-
-using UnityEngine;
+﻿using UnityEngine;
 #if UNITY_SWITCH  && !(UNITY_EDITOR)
 using nn.hid;
 #endif
@@ -16,9 +14,9 @@ static public class SwitchInput
     //現在のボタンの状態
     static long[] currentButtons;
     //スティックの情報
-    struct StickInfo
+    class StickInfo
     {
-        public float horizontal, vertical;
+        public float horizontal = 0.0f, vertical = 0.0f;
     }
     //スティックの水平
     static StickInfo[] stickInfos;
@@ -439,5 +437,6 @@ public enum SwitchButton : long
     ZTrigger = 0x1 << 13,
 #endif
     Jump = SwitchButton.Down,
+    Switch = SwitchButton.Right,
     None = 0
 }
