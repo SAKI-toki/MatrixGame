@@ -16,7 +16,7 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     bool isFixedPosition = true;
     public bool IsFixedPosition { get { return isFixedPosition; } }
     //自分の答えを保持する
-    AnswerType answer = default(AnswerType);
+    public AnswerType answer = default(AnswerType);
     Text answerText = null;
     PlayerConfig playerConfigInstance = null;
 

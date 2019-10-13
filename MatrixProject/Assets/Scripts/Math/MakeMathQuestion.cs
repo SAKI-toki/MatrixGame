@@ -8,10 +8,10 @@ public class MakeMathQuestion : MakeQuestion<int>
 {
     enum QuestionType { Add, Sub, Mul, Dev, None };
 
-    public override Question<int> Make(List<int> numberList)
+    public override Question<int> Make(List<int> answerList)
     {
         //答え
-        int answer = numberList[Random.Range(0, numberList.Count)];
+        int answer = answerList[Random.Range(0, answerList.Count)];
         //0か1の時
         if (answer == 0 || answer == 1)
         {

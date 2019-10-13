@@ -22,5 +22,5 @@ public abstract class MakeQuestion<T> : MonoBehaviour
     /// <summary>
     /// 問題を作成
     /// </summary>
-    public abstract Question<T> Make(List<T> numberList);
+    public abstract Question<T> Make(List<T> answerList);
 }

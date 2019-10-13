@@ -16,7 +16,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
     [SerializeField, Tooltip("スクロールオブジェクト")]
     GameObject scrollObject = null;
     //プレイヤーリスト
-    List<PlayerType> players = new List<PlayerType>();
+    protected List<PlayerType> players = new List<PlayerType>();
     static int playerCount = 0;
 
     void Start()
@@ -29,7 +29,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         {
             //生成
             GameObject playerObject = Instantiate(playerPrefab,
-                new Vector3(GetPlayerFixedPositionX(i), 0, 0),
+                scrollObject.transform.position + new Vector3(GetPlayerFixedPositionX(i), 0, 0),
                 Quaternion.identity);
             //リストに追加
             players.Add(playerObject.AddComponent<PlayerType>());
@@ -105,4 +105,6 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         }
         return true;
     }
+
+    public abstract List<AnswerType> GetAnswerList();
 }
