@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -83,5 +84,23 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
         const float rayLength = 0.3f;
         Vector3 rayPosition = transform.position - new Vector3(0, 0.8f, 0);
         return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        //敵と衝突
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
+            if (answer.Equals(enemyAnswer))
+            {
+                Debug.Log("==");
+            }
+            else
+            {
+                Debug.Log("!=");
+            }
+            Destroy(other.gameObject);
+        }
     }
 }

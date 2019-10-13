@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54aa895434da1a14c83f06574f51ea60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyParent: {fileID: 1410451995}
+  enemyTransform: {fileID: 1410451996}
   scrollTransform: {fileID: 759168635}
   playerManager: {fileID: 860587754}
   makeMathQuestion: {fileID: 2030702597}

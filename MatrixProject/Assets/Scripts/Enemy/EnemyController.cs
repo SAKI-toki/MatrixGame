@@ -31,7 +31,7 @@ public abstract class EnemyController<AnswerType> : MonoBehaviour
     /// <summary>
     /// 答えの取得
     /// </summary>
-    AnswerType GetAnswer()
+    public AnswerType GetAnswer()
     {
         return question.Answer;
     }

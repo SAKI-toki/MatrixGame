@@ -10,16 +10,16 @@ public abstract class EnemyManager<EnemyType, AnswerType> : MonoBehaviour where 
 
     //画面中央からどのくらい近づいたら問題を生成するか(X軸)
     const float makeQuestionRangeX = 15.0f;
-    [SerializeField, Tooltip("敵が入っている親オブジェクト")]
-    GameObject enemyParent = null;
+    [SerializeField, Tooltip("敵が入っている親オブジェクトのTransform")]
+    Transform enemyTransform = null;
     [SerializeField, Tooltip("スクロールオブジェクトのTransform")]
     Transform scrollTransform = null;
 
     void Start()
     {
-        for (int i = 0; i < enemyParent.transform.childCount; ++i)
+        for (int i = 0; i < enemyTransform.childCount; ++i)
         {
-            var enemy = enemyParent.transform.GetChild(i).gameObject.AddComponent<EnemyType>();
+            var enemy = enemyTransform.GetChild(i).gameObject.AddComponent<EnemyType>();
             EnemyInitialize(enemy);
             enemyList.Add(enemy);
         }
