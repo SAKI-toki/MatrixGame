@@ -4,9 +4,9 @@ using System.Collections.Generic;
 /// <summary>
 /// プレイヤーを管理するクラス
 /// </summary>
-public class PlayerManager : MonoBehaviour
+public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour where PlayerType : PlayerController<AnswerType>
 {
-    [SerializeField, Tooltip("先頭のプレイヤーの位置(X)")]
+    [SerializeField, Tooltip("先頭のプレイヤーの位置(画面の中心を0とする)")]
     float leadPositionX = 0.0f;
     [SerializeField, Tooltip("プレイヤー同士の間隔")]
     float interval = 1.0f;
@@ -15,25 +15,24 @@ public class PlayerManager : MonoBehaviour
     GameObject playerPrefab = null;
     [SerializeField, Tooltip("スクロールオブジェクト")]
     GameObject scrollObject = null;
-    //プレイヤーの数
-    static int PlayerCount = 0;
     //プレイヤーリスト
-    List<PlayerController> players = new List<PlayerController>(PlayerCount);
+    protected List<PlayerType> players = new List<PlayerType>();
+    static int playerCount = 0;
 
     void Start()
     {
-#if true
-        PlayerCount = 4;
+#if UNITY_EDITOR
+        playerCount = 4;
 #endif
         //プレイヤーの生成
-        for (int i = 0; i < PlayerCount; ++i)
+        for (int i = 0; i < playerCount; ++i)
         {
             //生成
             GameObject playerObject = Instantiate(playerPrefab,
-                new Vector3(GetPlayerFixedPositionX(i), 0, 0),
+                scrollObject.transform.position + new Vector3(GetPlayerFixedPositionX(i), 0, 0),
                 Quaternion.identity);
             //リストに追加
-            players.Add(playerObject.GetComponent<PlayerController>());
+            players.Add(playerObject.AddComponent<PlayerType>());
             //プレイヤーの番号をセット
             players[i].playerNumber = i;
             //スクロールするオブジェクトを親に設定
@@ -42,13 +41,6 @@ public class PlayerManager : MonoBehaviour
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
     }
-
-#if UNITY_EDITOR
-    [SerializeField]
-    int debugSwitchPlayerNumber = 0;
-    [SerializeField]
-    bool debugSwitch = false;
-#endif
 
     void Update()
     {
@@ -59,23 +51,37 @@ public class PlayerManager : MonoBehaviour
         //全てのプレイヤーが定位置にいなければ入れ替えができない
         if (IsAllPlayerFixedPosition())
         {
-            //入れ替える
-            for (int i = 1; i < players.Count; ++i)
-            {
-                if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
+            PlayerExchange();
+        }
+    }
+
+#if UNITY_EDITOR
+    [SerializeField]
+    int debugSwitchPlayerNumber = 0;
+    [SerializeField]
+    bool debugSwitch = false;
+#endif
+    /// <summary>
+    /// プレイヤーを入れ替える
+    /// </summary>
+    void PlayerExchange()
+    {
+        //入れ替える
+        for (int i = 1; i < players.Count; ++i)
+        {
+            if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
 #if UNITY_EDITOR
             || (debugSwitch && debugSwitchPlayerNumber == i)
 #endif
             )
-                {
+            {
 #if UNITY_EDITOR
-                    debugSwitch = false;
+                debugSwitch = false;
 #endif
-                    var temp = players[0];
-                    players[0] = players[i];
-                    players[i] = temp;
-                    break;
-                }
+                var temp = players[0];
+                players[0] = players[i];
+                players[i] = temp;
+                break;
             }
         }
     }
@@ -99,4 +105,6 @@ public class PlayerManager : MonoBehaviour
         }
         return true;
     }
+
+    public abstract List<AnswerType> GetAnswerList();
 }

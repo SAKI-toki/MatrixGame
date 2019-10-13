@@ -1,21 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public abstract class PlayerController<AnswerType> : MonoBehaviour
 {
-    [SerializeField, Range(0, 1), Tooltip("定位置に移動する速度")]
-    float fixedSpeed = 0.1f;
-    [SerializeField, Tooltip("ジャンプ力")]
-    float jumpPower = 10.0f;
-    [SerializeField, Tooltip("重力")]
-    float gravityPower = 15.0f;
-    [SerializeField, Tooltip("地面に向けたレイを飛ばすポイント")]
-    Transform groundRayPoint = null;
-    [SerializeField, Tooltip("地面に向けたレイの長さ")]
-    float groundRayLength = 1.0f;
     new Rigidbody rigidbody;
 
     //プレイヤーの番号(0~3)
@@ -23,16 +15,23 @@ public class PlayerController : MonoBehaviour
     public int playerNumber = 0;
     //定位置にいるかどうか
     bool isFixedPosition = true;
-    public bool IsFixedPosition { get { return this.isFixedPosition; } }
+    public bool IsFixedPosition { get { return isFixedPosition; } }
+    //自分の答えを保持する
+    public AnswerType answer = default(AnswerType);
+    Text answerText = null;
+    PlayerConfig playerConfigInstance = null;
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        playerConfigInstance = PlayerConfig.GetInstance();
+        answerText = GetComponentInChildren<Text>();
     }
 
     void Update()
     {
-        rigidbody.AddForce(Vector3.up * -gravityPower);
+        rigidbody.AddForce(Vector3.up * -playerConfigInstance.GravityPower);
+        answerText.text = answer.ToString();
     }
 
     /// <summary>
@@ -54,7 +53,7 @@ public class PlayerController : MonoBehaviour
         if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
         {
             //定位置に向かって移動する
-            position.x = Mathf.Lerp(position.x, localFixedPositionX, fixedSpeed);
+            position.x = Mathf.Lerp(position.x, localFixedPositionX, playerConfigInstance.FixedSpeed);
             //定位置ではない
             isFixedPosition = false;
         }
@@ -73,7 +72,7 @@ public class PlayerController : MonoBehaviour
     {
         if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) && IsGround())
         {
-            rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+            rigidbody.AddForce(Vector3.up * playerConfigInstance.JumpPower, ForceMode.Impulse);
         }
     }
 
@@ -82,6 +81,26 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     bool IsGround()
     {
-        return Physics.Linecast(groundRayPoint.position, groundRayPoint.position - Vector3.up * groundRayLength);
+        const float rayLength = 0.3f;
+        Vector3 rayPosition = transform.position - new Vector3(0, 0.8f, 0);
+        return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        //敵と衝突
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
+            if (answer.Equals(enemyAnswer))
+            {
+                Debug.Log("==");
+            }
+            else
+            {
+                Debug.Log("!=");
+            }
+            Destroy(other.gameObject);
+        }
     }
 }
