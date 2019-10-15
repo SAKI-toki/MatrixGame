@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// 算数用のプレイヤー管理クラス

@@ -15,7 +15,7 @@ public abstract class EnemyManager<EnemyType, AnswerType> : MonoBehaviour where 
     [SerializeField, Tooltip("スクロールオブジェクトのTransform")]
     Transform scrollTransform = null;
 
-    void Start()
+    protected void Start()
     {
         for (int i = 0; i < enemyTransform.childCount; ++i)
         {
@@ -25,7 +25,7 @@ public abstract class EnemyManager<EnemyType, AnswerType> : MonoBehaviour where 
         }
     }
 
-    void Update()
+    protected void Update()
     {
         foreach (var enemy in enemyList)
         {

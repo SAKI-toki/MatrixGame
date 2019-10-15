@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -17,18 +16,19 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     bool isFixedPosition = true;
     public bool IsFixedPosition { get { return isFixedPosition; } }
     //自分の答えを保持する
+    [System.NonSerialized]
     public AnswerType answer = default(AnswerType);
     Text answerText = null;
     PlayerConfig playerConfigInstance = null;
 
-    void Start()
+    protected void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         playerConfigInstance = PlayerConfig.GetInstance();
         answerText = GetComponentInChildren<Text>();
     }
 
-    void Update()
+    protected void Update()
     {
         rigidbody.AddForce(Vector3.up * -playerConfigInstance.GravityPower);
         answerText.text = answer.ToString();
@@ -52,8 +52,11 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
         //ある程度近くないと加速、減速する
         if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
         {
+            //すり抜け防止に最大速度を決めておく
+            const float MaxFixedSpeed = 0.3f;
             //定位置に向かって移動する
-            position.x = Mathf.Lerp(position.x, localFixedPositionX, playerConfigInstance.FixedSpeed);
+            float x = Mathf.Lerp(position.x, localFixedPositionX, playerConfigInstance.FixedSpeed);
+            position.x = Mathf.Clamp(x, position.x - MaxFixedSpeed, position.x + MaxFixedSpeed);
             //定位置ではない
             isFixedPosition = false;
         }
@@ -81,15 +84,15 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     /// </summary>
     bool IsGround()
     {
-        const float rayLength = 0.3f;
-        Vector3 rayPosition = transform.position - new Vector3(0, 0.8f, 0);
+        const float rayLength = 0.15f;
+        Vector3 rayPosition = transform.position - new Vector3(0, 0.9f, 0);
         return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
     }
 
     private void OnCollisionEnter(Collision other)
     {
         //敵と衝突
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.tag == "Enemy")
         {
             var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
             if (answer.Equals(enemyAnswer))

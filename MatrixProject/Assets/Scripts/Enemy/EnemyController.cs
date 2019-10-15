@@ -12,7 +12,7 @@ public abstract class EnemyController<AnswerType> : MonoBehaviour
     [System.NonSerialized]
     public bool alwaysSetQuestion = false;
 
-    void Start()
+    protected void Start()
     {
         questionUI = GetComponentInChildren<Text>();
     }

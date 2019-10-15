@@ -19,7 +19,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
     protected List<PlayerType> players = new List<PlayerType>();
     static int playerCount = 0;
 
-    void Start()
+    protected void Start()
     {
 #if UNITY_EDITOR
         playerCount = 4;
@@ -42,7 +42,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         Physics.Simulate(10.0f);
     }
 
-    void Update()
+    protected void Update()
     {
         for (int i = 0; i < players.Count; ++i)
         {
