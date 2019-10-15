@@ -21,9 +21,9 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
 
     protected void Start()
     {
-#if UNITY_EDITOR
+        //#if UNITY_EDITOR
         playerCount = 4;
-#endif
+        //#endif
         //プレイヤーの生成
         for (int i = 0; i < playerCount; ++i)
         {
@@ -38,6 +38,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
             //スクロールするオブジェクトを親に設定
             players[i].transform.parent = scrollObject.transform;
         }
+        InitializePlayerAnswer();
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
     }
@@ -52,6 +53,10 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         if (IsAllPlayerFixedPosition())
         {
             PlayerExchange();
+        }
+        if (SwitchInput.GetButton(0, SwitchButton.Stick) && SwitchInput.GetButton(0, SwitchButton.ZTrigger))
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScene");
         }
     }
 
@@ -106,5 +111,6 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         return true;
     }
 
+    protected abstract void InitializePlayerAnswer();
     public abstract List<AnswerType> GetAnswerList();
 }

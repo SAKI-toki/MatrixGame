@@ -34,6 +34,8 @@ static public class SwitchInput
         prevButtons = new long[npadIdsLength];
         currentButtons = new long[npadIdsLength];
         stickInfos = new StickInfo[npadIdsLength];
+        for (int i = 0; i < npadIdsLength; ++i)
+            stickInfos[i] = new StickInfo();
 #if UNITY_EDITOR
         xboxCurrentButtons = new bool[npadIdsLength, (int)XboxInput.None];
         xboxPrevButtons = new bool[npadIdsLength, (int)XboxInput.None];
