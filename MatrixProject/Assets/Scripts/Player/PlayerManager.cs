@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 
 /// <summary>
+/// プレイヤーの人数
+/// </summary>
+static class PlayerNumber
+{
+    static public int count = 0;
+}
+
+/// <summary>
 /// プレイヤーを管理するクラス
 /// </summary>
 public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour where PlayerType : PlayerController<AnswerType>
@@ -17,16 +25,14 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
     GameObject scrollObject = null;
     //プレイヤーリスト
     protected List<PlayerType> players = new List<PlayerType>();
-    static int playerCount = 0;
 
     protected void Start()
     {
-        Debug.Log(sizeof(float) + sizeof(float));
         //#if UNITY_EDITOR
-        playerCount = 4;
+        PlayerNumber.count = 4;
         //#endif
         //プレイヤーの生成
-        for (int i = 0; i < playerCount; ++i)
+        for (int i = 0; i < PlayerNumber.count; ++i)
         {
             //生成
             GameObject playerObject = Instantiate(playerPrefab,
@@ -47,6 +53,10 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
 
     protected void Update()
     {
+        for (int i = players.Count - 1; i >= 0; --i)
+        {
+            if (!players[i]) players.Remove(players[i]);
+        }
         for (int i = 0; i < players.Count; ++i)
         {
             players[i].MoveUpdate(GetPlayerFixedPositionX(i));

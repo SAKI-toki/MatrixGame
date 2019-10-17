@@ -95,7 +95,7 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         //敵と衝突
-        if (other.gameObject.tag == "Enemy")
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
             if (answer.Equals(enemyAnswer))
@@ -106,6 +106,10 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
             {
                 scrollController.KnockBack(3.0f);
             }
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("PlayerDestroy"))
+        {
+            Destroy(gameObject);
         }
     }
 }
