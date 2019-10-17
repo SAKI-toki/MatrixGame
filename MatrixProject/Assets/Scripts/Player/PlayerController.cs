@@ -53,7 +53,7 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
         if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
         {
             //すり抜け防止に最大速度を決めておく
-            const float MaxFixedSpeed = 0.3f;
+            const float MaxFixedSpeed = 0.1f;
             //定位置に向かって移動する
             float x = Mathf.Lerp(position.x, localFixedPositionX, playerConfigInstance.FixedSpeed);
             position.x = Mathf.Clamp(x, position.x - MaxFixedSpeed, position.x + MaxFixedSpeed);
@@ -73,7 +73,8 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     /// </summary>
     void Jump()
     {
-        if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) && IsGround())
+        if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) &&
+        Mathf.Abs(rigidbody.velocity.y) < 0.001f && IsGround())
         {
             rigidbody.AddForce(Vector3.up * playerConfigInstance.JumpPower, ForceMode.Impulse);
         }

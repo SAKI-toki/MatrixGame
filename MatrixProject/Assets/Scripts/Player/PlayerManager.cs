@@ -21,6 +21,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
 
     protected void Start()
     {
+        Debug.Log(sizeof(float) + sizeof(float));
         //#if UNITY_EDITOR
         playerCount = 4;
         //#endif
