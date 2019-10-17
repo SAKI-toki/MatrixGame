@@ -38,6 +38,7 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
             players[i].playerNumber = i;
             //スクロールするオブジェクトを親に設定
             players[i].transform.parent = scrollObject.transform;
+            players[i].scrollController = scrollObject.GetComponent<ScrollController>();
         }
         InitializePlayerAnswer();
         //プレイヤーを地面につけるために物理演算させる

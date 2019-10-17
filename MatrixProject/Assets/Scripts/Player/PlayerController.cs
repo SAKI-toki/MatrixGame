@@ -20,6 +20,8 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
     public AnswerType answer = default(AnswerType);
     Text answerText = null;
     PlayerConfig playerConfigInstance = null;
+    [System.NonSerialized]
+    public ScrollController scrollController = null;
 
     protected void Start()
     {
@@ -98,13 +100,12 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
             var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
             if (answer.Equals(enemyAnswer))
             {
-                Debug.Log("==");
+                Destroy(other.gameObject);
             }
             else
             {
-                Debug.Log("!=");
+                scrollController.KnockBack(3.0f);
             }
-            Destroy(other.gameObject);
         }
     }
 }
