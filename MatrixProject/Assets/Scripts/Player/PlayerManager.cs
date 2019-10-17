@@ -25,6 +25,8 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
     GameObject scrollObject = null;
     //プレイヤーリスト
     protected List<PlayerType> players = new List<PlayerType>();
+    [SerializeField]
+    UnityEngine.UI.Text isFixedText = null;
 
     protected void Start()
     {
@@ -64,7 +66,12 @@ public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour wher
         //全てのプレイヤーが定位置にいなければ入れ替えができない
         if (IsAllPlayerFixedPosition())
         {
+            isFixedText.text = "Can Switch Player";
             PlayerExchange();
+        }
+        else
+        {
+            isFixedText.text = "Can't Switch Player";
         }
         if (SwitchInput.GetButton(0, SwitchButton.Stick) && SwitchInput.GetButton(0, SwitchButton.ZTrigger))
         {
