@@ -1,73 +1,34 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public abstract class PlayerController<AnswerType> : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
+    [SerializeField, Tooltip("横移動の力")]
+    float sideMovePower = 10.0f;
+    [SerializeField, Tooltip("ジャンプ力")]
+    float jumpPower = 10.0f;
+    [SerializeField, Tooltip("重力")]
+    float gravityPower = 15.0f;
+
     new Rigidbody rigidbody;
 
     //プレイヤーの番号(0~3)
     [System.NonSerialized]
     public int playerNumber = 0;
-    //定位置にいるかどうか
-    bool isFixedPosition = true;
-    public bool IsFixedPosition { get { return isFixedPosition; } }
-    //自分の答えを保持する
-    [System.NonSerialized]
-    public AnswerType answer = default(AnswerType);
-    Text answerText = null;
-    PlayerConfig playerConfigInstance = null;
-    [System.NonSerialized]
-    public ScrollController scrollController = null;
 
-    protected void Start()
+    void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        playerConfigInstance = PlayerConfig.GetInstance();
-        answerText = GetComponentInChildren<Text>();
     }
 
-    protected void Update()
+    void Update()
     {
-        rigidbody.AddForce(Vector3.up * -playerConfigInstance.GravityPower);
-        answerText.text = answer.ToString();
-    }
-
-    /// <summary>
-    /// 移動時の更新
-    /// </summary>
-    public void MoveUpdate(float localFixedPositionX)
-    {
-        FixedPositionMove(localFixedPositionX);
+        rigidbody.AddForce(Vector3.up * -gravityPower);
         Jump();
-    }
-
-    /// <summary>
-    /// 定位置に寄せる
-    /// </summary>
-    void FixedPositionMove(float localFixedPositionX)
-    {
-        var position = transform.localPosition;
-        //ある程度近くないと加速、減速する
-        if (Mathf.Abs(position.x - localFixedPositionX) > 0.1f)
-        {
-            //すり抜け防止に最大速度を決めておく
-            const float MaxFixedSpeed = 0.1f;
-            //定位置に向かって移動する
-            float x = Mathf.Lerp(position.x, localFixedPositionX, playerConfigInstance.FixedSpeed);
-            position.x = Mathf.Clamp(x, position.x - MaxFixedSpeed, position.x + MaxFixedSpeed);
-            //定位置ではない
-            isFixedPosition = false;
-        }
-        else
-        {
-            //定位置である
-            isFixedPosition = true;
-        }
-        transform.localPosition = position;
+        SideMove();
     }
 
     /// <summary>
@@ -78,8 +39,34 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
         if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) &&
         Mathf.Abs(rigidbody.velocity.y) < 0.001f && IsGround())
         {
-            rigidbody.AddForce(Vector3.up * playerConfigInstance.JumpPower, ForceMode.Impulse);
+            rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         }
+    }
+
+    /// <summary>
+    /// 横の移動
+    /// </summary>
+    void SideMove()
+    {
+        bool l = SwitchInput.GetButton(playerNumber, SwitchButton.SL);
+        bool r = SwitchInput.GetButton(playerNumber, SwitchButton.SR);
+        Vector3 position = transform.position;
+        //どちらも押していない、またはどちらも押している場合は移動しない
+        if (l == r)
+        {
+            return;
+        }
+        //減速
+        else if (l)
+        {
+            position.x -= sideMovePower * Time.deltaTime;
+        }
+        //加速
+        else if (r)
+        {
+            position.x += sideMovePower * Time.deltaTime;
+        }
+        transform.position = position;
     }
 
     /// <summary>
@@ -97,19 +84,6 @@ public abstract class PlayerController<AnswerType> : MonoBehaviour
         //敵と衝突
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            var enemyAnswer = other.transform.GetComponent<EnemyController<AnswerType>>().GetAnswer();
-            if (answer.Equals(enemyAnswer))
-            {
-                Destroy(other.gameObject);
-            }
-            else
-            {
-                scrollController.KnockBack(3.0f);
-            }
-        }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("PlayerDestroy"))
-        {
-            Destroy(gameObject);
         }
     }
 }
