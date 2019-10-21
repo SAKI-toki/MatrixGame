@@ -6,26 +6,21 @@
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    //プレイヤーの番号(0~3)
+    int playerNumber = 0;
+
     [SerializeField, Tooltip("横移動の力")]
-    float sideMovePower = 10.0f;
+    float sideMoveSpeed = 10.0f;
     [SerializeField, Tooltip("ジャンプ力")]
     float jumpPower = 10.0f;
     [SerializeField, Tooltip("重力")]
     float gravityPower = 15.0f;
-
-    new Rigidbody rigidbody;
-
-    //プレイヤーの番号(0~3)
-    [System.NonSerialized]
-    public int playerNumber = 0;
-
-    void Awake()
-    {
-        rigidbody = GetComponent<Rigidbody>();
-    }
+    [SerializeField, Tooltip("リジッドボディ")]
+    new Rigidbody rigidbody = null;
 
     void Update()
     {
+        //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
         Jump();
         SideMove();
@@ -36,6 +31,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void Jump()
     {
+        //ジャンプボタンを押し、y方向の力が0に限りなく近く、地面についているときにジャンプする
         if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) &&
         Mathf.Abs(rigidbody.velocity.y) < 0.001f && IsGround())
         {
@@ -51,20 +47,18 @@ public class PlayerController : MonoBehaviour
         bool l = SwitchInput.GetButton(playerNumber, SwitchButton.SL);
         bool r = SwitchInput.GetButton(playerNumber, SwitchButton.SR);
         Vector3 position = transform.position;
-        //どちらも押していない、またはどちらも押している場合は移動しない
-        if (l == r)
+        if (l != r)
         {
-            return;
-        }
-        //減速
-        else if (l)
-        {
-            position.x -= sideMovePower * Time.deltaTime;
-        }
-        //加速
-        else if (r)
-        {
-            position.x += sideMovePower * Time.deltaTime;
+            //減速
+            if (l)
+            {
+                position.x -= sideMoveSpeed * Time.deltaTime;
+            }
+            //加速
+            else //if(r)
+            {
+                position.x += sideMoveSpeed * Time.deltaTime;
+            }
         }
         transform.position = position;
     }
@@ -79,11 +73,27 @@ public class PlayerController : MonoBehaviour
         return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
     }
 
-    private void OnCollisionEnter(Collision other)
+    /// <summary>
+    /// 敵に当たったときの処理
+    /// </summary>
+    void HitEnemy()
+    {
+    }
+
+    /// <summary>
+    /// プレイヤーの番号をセット
+    /// </summary>
+    public void SetPlayerNumber(int x)
+    {
+        playerNumber = x;
+    }
+
+    void OnCollisionEnter(Collision other)
     {
         //敵と衝突
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
+            HitEnemy();
         }
     }
 }

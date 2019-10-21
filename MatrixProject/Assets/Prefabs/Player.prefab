@@ -108,9 +108,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a8d633aa293804c9d1305987680f34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideMovePower: 5
+  sideMoveSpeed: 5
   jumpPower: 20
   gravityPower: 40
+  rigidbody: {fileID: 5508413096986860001}
 --- !u!136 &8798504753505952939
 CapsuleCollider:
   m_ObjectHideFlags: 0
