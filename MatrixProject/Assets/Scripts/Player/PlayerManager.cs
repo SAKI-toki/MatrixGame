@@ -15,7 +15,7 @@ static class PlayerNumber
 public class PlayerManager : MonoBehaviour
 {
     [SerializeField, Tooltip("スクロール")]
-    GameObject scrollObject = null;
+    ScrollController scrollController = null;
     [SerializeField, Tooltip("プレイヤーPrefab")]
     GameObject playerPrefab = null;
     [SerializeField, Tooltip("プレイヤーの初期位置")]
@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         //#if UNITY_EDITOR
-        PlayerNumber.count = 1;
+        PlayerNumber.count = 4;
         //#endif
         for (int i = 0; i < PlayerNumber.count; ++i)
         {
@@ -37,8 +37,9 @@ public class PlayerManager : MonoBehaviour
             players.Add(playerObject.GetComponent<PlayerController>());
             //プレイヤーの番号をセット
             players[i].SetPlayerNumber(i);
+            scrollController.AddList(players[i]);
             //プレイヤーの親をセット
-            players[i].transform.transform.parent = scrollObject.transform;
+            //players[i].transform.transform.parent = scrollObject.transform;
         }
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);

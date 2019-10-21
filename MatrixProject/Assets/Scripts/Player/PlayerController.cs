@@ -4,7 +4,7 @@
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IScrollObject
 {
     //プレイヤーの番号(0~3)
     int playerNumber = 0;
@@ -17,13 +17,31 @@ public class PlayerController : MonoBehaviour
     float gravityPower = 15.0f;
     [SerializeField, Tooltip("リジッドボディ")]
     new Rigidbody rigidbody = null;
+    [SerializeField, Tooltip("移動範囲")]
+    float moveRange = 9.0f;
+
+    float velocityX = 0.0f;
 
     void Update()
     {
+        if (transform.position.x > moveRange)
+        {
+            var position = transform.position;
+            position.x = moveRange;
+            transform.position = position;
+        }
+        velocityX = 0.0f;
         //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
         Jump();
         SideMove();
+    }
+
+    void LateUpdate()
+    {
+        var velocity = rigidbody.velocity;
+        velocity.x = velocityX;
+        rigidbody.velocity = velocity;
     }
 
     /// <summary>
@@ -31,10 +49,12 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void Jump()
     {
-        //ジャンプボタンを押し、y方向の力が0に限りなく近く、地面についているときにジャンプする
-        if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) &&
-        Mathf.Abs(rigidbody.velocity.y) < 0.001f && IsGround())
+        //ジャンプボタンを押し、地面についているときにジャンプする
+        if (SwitchInput.GetButtonDown(playerNumber, SwitchButton.Jump) && IsGround())
         {
+            var velocity = rigidbody.velocity;
+            velocity.y = 0.0f;
+            rigidbody.velocity = velocity;
             rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
         }
     }
@@ -46,21 +66,17 @@ public class PlayerController : MonoBehaviour
     {
         bool l = SwitchInput.GetButton(playerNumber, SwitchButton.SL);
         bool r = SwitchInput.GetButton(playerNumber, SwitchButton.SR);
-        Vector3 position = transform.position;
-        if (l != r)
+        if (l == r) return;
+        //減速
+        if (l)
         {
-            //減速
-            if (l)
-            {
-                position.x -= sideMoveSpeed * Time.deltaTime;
-            }
-            //加速
-            else //if(r)
-            {
-                position.x += sideMoveSpeed * Time.deltaTime;
-            }
+            velocityX -= sideMoveSpeed;
         }
-        transform.position = position;
+        //加速
+        else //if(r)
+        {
+            velocityX += sideMoveSpeed;
+        }
     }
 
     /// <summary>
@@ -95,5 +111,11 @@ public class PlayerController : MonoBehaviour
         {
             HitEnemy();
         }
+    }
+
+    void IScrollObject.Scroll(float scrollValue)
+    {
+        velocityX += scrollValue;
+        moveRange += scrollValue * Time.deltaTime;
     }
 }

@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public interface IScrollObject
+{
+    void Scroll(float scrollValue);
+}
+
 /// <summary>
 /// スクロールを制御するクラス
 /// </summary>
@@ -13,10 +18,25 @@ public class ScrollController : MonoBehaviour
 
     Vector3 position;
 
-    void LateUpdate()
+    List<IScrollObject> scrollObjects = new List<IScrollObject>();
+
+    void Update()
     {
-        position = transform.position;
-        position.x += defaultScrollSpeed * scrollScale * Time.deltaTime;
-        transform.position = position;
+        for (int i = scrollObjects.Count - 1; i >= 0; --i)
+        {
+            if (scrollObjects[i] == null)
+            {
+                scrollObjects.RemoveAt(i);
+            }
+            else
+            {
+                scrollObjects[i].Scroll(defaultScrollSpeed * scrollScale);
+            }
+        }
+    }
+
+    public void AddList(IScrollObject addObject)
+    {
+        scrollObjects.Add(addObject);
     }
 }
