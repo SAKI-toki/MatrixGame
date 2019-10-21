@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         //#if UNITY_EDITOR
-        PlayerNumber.count = 4;
+        PlayerNumber.count = 1;
         //#endif
         for (int i = 0; i < PlayerNumber.count; ++i)
         {
