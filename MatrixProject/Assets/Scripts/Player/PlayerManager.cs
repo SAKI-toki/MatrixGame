@@ -12,124 +12,36 @@ static class PlayerNumber
 /// <summary>
 /// プレイヤーを管理するクラス
 /// </summary>
-public abstract class PlayerManager<PlayerType, AnswerType> : MonoBehaviour where PlayerType : PlayerController<AnswerType>
+public class PlayerManager : MonoBehaviour
 {
-    [SerializeField, Tooltip("先頭のプレイヤーの位置(画面の中心を0とする)")]
-    float leadPositionX = 0.0f;
-    [SerializeField, Tooltip("プレイヤー同士の間隔")]
-    float interval = 1.0f;
-
+    [SerializeField, Tooltip("スクロール")]
+    ScrollController scrollController = null;
     [SerializeField, Tooltip("プレイヤーPrefab")]
     GameObject playerPrefab = null;
-    [SerializeField, Tooltip("スクロールオブジェクト")]
-    GameObject scrollObject = null;
+    [SerializeField, Tooltip("プレイヤーの初期位置")]
+    List<Transform> playerInitTransform = new List<Transform>();
     //プレイヤーリスト
-    protected List<PlayerType> players = new List<PlayerType>();
-    [SerializeField]
-    UnityEngine.UI.Text isFixedText = null;
+    List<PlayerController> players = new List<PlayerController>();
 
-    protected void Start()
+    void Start()
     {
         //#if UNITY_EDITOR
         PlayerNumber.count = 4;
         //#endif
-        //プレイヤーの生成
         for (int i = 0; i < PlayerNumber.count; ++i)
         {
             //生成
             GameObject playerObject = Instantiate(playerPrefab,
-                scrollObject.transform.position + new Vector3(GetPlayerFixedPositionX(i), 0, 0),
-                Quaternion.identity);
+                playerInitTransform[i].position, playerInitTransform[i].rotation);
             //リストに追加
-            players.Add(playerObject.AddComponent<PlayerType>());
+            players.Add(playerObject.GetComponent<PlayerController>());
             //プレイヤーの番号をセット
-            players[i].playerNumber = i;
-            //スクロールするオブジェクトを親に設定
-            players[i].transform.parent = scrollObject.transform;
-            players[i].scrollController = scrollObject.GetComponent<ScrollController>();
+            players[i].SetPlayerNumber(i);
+            scrollController.AddList(players[i]);
+            //プレイヤーの親をセット
+            //players[i].transform.transform.parent = scrollObject.transform;
         }
-        InitializePlayerAnswer();
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
     }
-
-    protected void Update()
-    {
-        for (int i = players.Count - 1; i >= 0; --i)
-        {
-            if (!players[i]) players.Remove(players[i]);
-        }
-        for (int i = 0; i < players.Count; ++i)
-        {
-            players[i].MoveUpdate(GetPlayerFixedPositionX(i));
-        }
-        //全てのプレイヤーが定位置にいなければ入れ替えができない
-        if (IsAllPlayerFixedPosition())
-        {
-            isFixedText.text = "Can Switch Player";
-            PlayerExchange();
-        }
-        else
-        {
-            isFixedText.text = "Can't Switch Player";
-        }
-        if (SwitchInput.GetButton(0, SwitchButton.Stick) && SwitchInput.GetButton(0, SwitchButton.ZTrigger))
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScene");
-        }
-    }
-
-#if UNITY_EDITOR
-    [SerializeField]
-    int debugSwitchPlayerNumber = 0;
-    [SerializeField]
-    bool debugSwitch = false;
-#endif
-    /// <summary>
-    /// プレイヤーを入れ替える
-    /// </summary>
-    void PlayerExchange()
-    {
-        //入れ替える
-        for (int i = 1; i < players.Count; ++i)
-        {
-            if (SwitchInput.GetButtonDown(players[i].playerNumber, SwitchButton.Switch)
-#if UNITY_EDITOR
-            || (debugSwitch && debugSwitchPlayerNumber == i)
-#endif
-            )
-            {
-#if UNITY_EDITOR
-                debugSwitch = false;
-#endif
-                var temp = players[0];
-                players[0] = players[i];
-                players[i] = temp;
-                break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// プレイヤーの定位置のX軸の座標を取得
-    /// </summary>
-    float GetPlayerFixedPositionX(int index)
-    {
-        return leadPositionX - interval * index;
-    }
-
-    /// <summary>
-    /// 全てのプレイヤーが定位置かどうか
-    /// </summary>
-    bool IsAllPlayerFixedPosition()
-    {
-        for (int i = 0; i < players.Count; ++i)
-        {
-            if (!players[i].IsFixedPosition) return false;
-        }
-        return true;
-    }
-
-    protected abstract void InitializePlayerAnswer();
-    public abstract List<AnswerType> GetAnswerList();
 }

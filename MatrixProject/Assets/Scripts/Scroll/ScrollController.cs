@@ -1,4 +1,10 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+
+public interface IScrollObject
+{
+    void Scroll(float scrollValue);
+}
 
 /// <summary>
 /// スクロールを制御するクラス
@@ -12,30 +18,25 @@ public class ScrollController : MonoBehaviour
 
     Vector3 position;
 
-    float knockBackPower = 0.0f;
-    float knockBackTime = 0.0f;
-    bool knockBackFlg = false;
+    List<IScrollObject> scrollObjects = new List<IScrollObject>();
 
     void Update()
     {
-        if (knockBackFlg)
+        for (int i = scrollObjects.Count - 1; i >= 0; --i)
         {
-            knockBackTime += Time.deltaTime;
-            scrollScale = Mathf.Lerp(knockBackPower, 1.0f, knockBackTime);
-            if (knockBackTime >= 1.0f) knockBackFlg = false;
+            if (scrollObjects[i] == null)
+            {
+                scrollObjects.RemoveAt(i);
+            }
+            else
+            {
+                scrollObjects[i].Scroll(defaultScrollSpeed * scrollScale);
+            }
         }
-        position = transform.position;
-        position.x += defaultScrollSpeed * scrollScale * Time.deltaTime;
-        transform.position = position;
     }
 
-    /// <summary>
-    /// ノックバックする関数
-    /// </summary>
-    public void KnockBack(float power)
+    public void AddList(IScrollObject addObject)
     {
-        knockBackPower = -power;
-        knockBackTime = 0.0f;
-        knockBackFlg = true;
+        scrollObjects.Add(addObject);
     }
 }
