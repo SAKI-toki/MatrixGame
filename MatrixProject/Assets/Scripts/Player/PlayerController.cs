@@ -22,6 +22,13 @@ public class PlayerController : MonoBehaviour, IScrollObject
 
     float velocityX = 0.0f;
 
+    int coinCount;
+
+    void Start()
+    {
+        SetCoinCount(0);
+    }
+
     void Update()
     {
         if (transform.position.x > moveRange)
@@ -30,7 +37,6 @@ public class PlayerController : MonoBehaviour, IScrollObject
             position.x = moveRange;
             transform.position = position;
         }
-        velocityX = 0.0f;
         //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
         Jump();
@@ -42,6 +48,7 @@ public class PlayerController : MonoBehaviour, IScrollObject
         var velocity = rigidbody.velocity;
         velocity.x = velocityX;
         rigidbody.velocity = velocity;
+        velocityX = 0.0f;
     }
 
     /// <summary>
@@ -79,21 +86,59 @@ public class PlayerController : MonoBehaviour, IScrollObject
         }
     }
 
-    /// <summary>
-    /// 疑似的に地面についているかどうか返す
-    /// </summary>
-    bool IsGround()
-    {
-        const float rayLength = 0.15f;
-        Vector3 rayPosition = transform.position - new Vector3(0, 0.9f, 0);
-        return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
-    }
 
     /// <summary>
     /// 敵に当たったときの処理
     /// </summary>
     void HitEnemy()
     {
+        SetCoinCount(coinCount / 2);
+    }
+
+    /// <summary>
+    /// コインの取得
+    /// </summary>
+    public void GetCoin()
+    {
+        SetCoinCount(coinCount + 1);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        //敵と衝突
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            HitEnemy();
+            Destroy(other.gameObject);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        //アイテムと衝突
+        if (other.gameObject.layer == LayerMask.NameToLayer("Item"))
+        {
+            other.gameObject.GetComponent<ItemBase>().GetItemFunction(this);
+            Destroy(other.gameObject);
+        }
+    }
+
+    /// <summary>
+    /// スクロール
+    /// </summary>
+    void IScrollObject.Scroll(float scrollValue)
+    {
+        velocityX += scrollValue;
+        moveRange += scrollValue * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// コインの数のセット
+    /// </summary>
+    void SetCoinCount(int n)
+    {
+        coinCount = n;
+        Debug.Log(playerNumber + 1 + "プレイヤーの持ってるコインの数 : " + coinCount + "個");
     }
 
     /// <summary>
@@ -104,18 +149,13 @@ public class PlayerController : MonoBehaviour, IScrollObject
         playerNumber = x;
     }
 
-    void OnCollisionEnter(Collision other)
+    /// <summary>
+    /// 疑似的に地面についているかどうか返す
+    /// </summary>
+    bool IsGround()
     {
-        //敵と衝突
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-        {
-            HitEnemy();
-        }
-    }
-
-    void IScrollObject.Scroll(float scrollValue)
-    {
-        velocityX += scrollValue;
-        moveRange += scrollValue * Time.deltaTime;
+        const float rayLength = 0.15f;
+        Vector3 rayPosition = transform.position - new Vector3(0, 0.9f, 0);
+        return Physics.Linecast(rayPosition, rayPosition - Vector3.up * rayLength);
     }
 }

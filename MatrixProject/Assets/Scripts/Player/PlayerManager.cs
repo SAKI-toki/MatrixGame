@@ -37,9 +37,8 @@ public class PlayerManager : MonoBehaviour
             players.Add(playerObject.GetComponent<PlayerController>());
             //プレイヤーの番号をセット
             players[i].SetPlayerNumber(i);
+            //リストに追加
             scrollController.AddList(players[i]);
-            //プレイヤーの親をセット
-            //players[i].transform.transform.parent = scrollObject.transform;
         }
         //プレイヤーを地面につけるために物理演算させる
         Physics.Simulate(10.0f);
