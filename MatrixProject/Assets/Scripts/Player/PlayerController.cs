@@ -22,11 +22,11 @@ public class PlayerController : MonoBehaviour, IScrollObject
 
     float velocityX = 0.0f;
 
-    int coinCount;
+    int gold;
 
     void Start()
     {
-        SetCoinCount(0);
+        SetGold(0);
     }
 
     void Update()
@@ -92,15 +92,15 @@ public class PlayerController : MonoBehaviour, IScrollObject
     /// </summary>
     void HitEnemy()
     {
-        SetCoinCount(coinCount / 2);
+        SetGold(gold / 2);
     }
 
     /// <summary>
     /// コインの取得
     /// </summary>
-    public void GetCoin()
+    public void IncrementGold(int addGold)
     {
-        SetCoinCount(coinCount + 1);
+        SetGold(gold + addGold);
     }
 
     void OnCollisionEnter(Collision other)
@@ -135,10 +135,10 @@ public class PlayerController : MonoBehaviour, IScrollObject
     /// <summary>
     /// コインの数のセット
     /// </summary>
-    void SetCoinCount(int n)
+    void SetGold(int n)
     {
-        coinCount = n;
-        Debug.Log(playerNumber + 1 + "プレイヤーの持ってるコインの数 : " + coinCount + "個");
+        gold = n;
+        Debug.Log(playerNumber + 1 + "プレイヤーの持ってるコインの数 : " + gold + "個");
     }
 
     /// <summary>
