@@ -126,10 +126,10 @@ public class PlayerController : MonoBehaviour, IScrollObject
     /// <summary>
     /// スクロール
     /// </summary>
-    void IScrollObject.Scroll(float scrollValue)
+    void IScrollObject.Scroll(Vector3 scrollValue)
     {
-        velocityX += scrollValue;
-        moveRange += scrollValue * Time.deltaTime;
+        velocityX += scrollValue.x;
+        moveRange += scrollValue.x * Time.deltaTime;
     }
 
     /// <summary>
