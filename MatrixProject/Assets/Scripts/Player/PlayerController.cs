@@ -6,7 +6,7 @@
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour, IScrollObject
 {
-    //プレイヤーの番号(0~3)
+    [SerializeField, Tooltip("プレイヤーの番号"), Range(0, 3)]
     int playerNumber = 0;
 
     [SerializeField, Tooltip("横移動の力")]
@@ -15,10 +15,12 @@ public class PlayerController : MonoBehaviour, IScrollObject
     float jumpPower = 10.0f;
     [SerializeField, Tooltip("重力")]
     float gravityPower = 15.0f;
-    [SerializeField, Tooltip("リジッドボディ")]
-    new Rigidbody rigidbody = null;
     [SerializeField, Tooltip("移動範囲")]
     float moveRange = 9.0f;
+    [SerializeField, Tooltip("リジッドボディ")]
+    new Rigidbody rigidbody = null;
+    [SerializeField, Tooltip("UIの管理クラス")]
+    PlayerUIManager uiManager = null;
 
     float velocityX = 0.0f;
 
@@ -138,7 +140,7 @@ public class PlayerController : MonoBehaviour, IScrollObject
     void SetGold(int n)
     {
         gold = n;
-        Debug.Log(playerNumber + 1 + "プレイヤーの持ってるコインの数 : " + gold + "個");
+        uiManager.GoldUpdate(playerNumber, gold);
     }
 
     /// <summary>
@@ -147,6 +149,11 @@ public class PlayerController : MonoBehaviour, IScrollObject
     public void SetPlayerNumber(int x)
     {
         playerNumber = x;
+    }
+
+    public int GetGold()
+    {
+        return gold;
     }
 
     /// <summary>

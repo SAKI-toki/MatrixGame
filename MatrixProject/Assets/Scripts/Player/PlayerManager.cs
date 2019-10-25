@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 static class PlayerNumber
 {
-    static public int count = 0;
+    static public int count = 2;
     public const int MaxCount = 4;
 }
 
@@ -20,18 +20,12 @@ public class PlayerManager : MonoBehaviour
     [SerializeField, Tooltip("プレイヤーリスト")]
     List<GameObject> playerObjects = new List<GameObject>();
 
-    void Start()
+    void Awake()
     {
-        //#if UNITY_EDITOR
-        PlayerNumber.count = 4;
-        //#endif
         for (int i = 0; i < PlayerNumber.count; ++i)
         {
-            //プレイヤーの番号をセット
-            var playerController = playerObjects[i].GetComponent<PlayerController>();
-            playerController.SetPlayerNumber(i);
             //リストに追加
-            scrollController.AddList(playerController);
+            scrollController.AddList(playerObjects[i].GetComponent<PlayerController>());
         }
         for (int i = PlayerNumber.count; i < PlayerNumber.MaxCount; ++i)
         {

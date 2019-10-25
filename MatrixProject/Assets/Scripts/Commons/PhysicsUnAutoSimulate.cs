@@ -5,11 +5,6 @@
 /// </summary>
 public class PhysicsUnAutoSimulate : Singleton<PhysicsUnAutoSimulate>
 {
-    void Awake()
-    {
-        Physics.autoSimulation = false;
-    }
-
     void LateUpdate()
     {
         Physics.Simulate(Time.deltaTime);

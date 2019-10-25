@@ -1,16 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// プレイヤーのUIの管理
+/// </summary>
 public class PlayerUIManager : MonoBehaviour
 {
-    [SerializeField]
-    RectTransform canvasRectTransform = null;
-
-    [SerializeField, Range(1, 4)]
-    int testPlayerNum = 4;
-    int maxPlayerNum = 4;
+    //[SerializeField]
+    //RectTransform canvasRectTransform = null;
 
     [SerializeField, Range(0.125f, 0.15f)]
     float playerUIWidth = 0.15f;
@@ -18,12 +15,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     GameObject playerUIPlafab = null;
 
-    GameObject[] playerUIArray;
+    //GameObject[] playerUIArray;
     Text[] goldTextArray;
 
-    void Start()
+    void Awake()
     {
-        PlayerUIGenerator(testPlayerNum);
+        PlayerUIGenerator(PlayerNumber.count);
     }
 
     void Update()
@@ -35,9 +32,9 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     void PlayerUIGenerator(int playerNum)
     {
-        playerUIArray = new GameObject[playerNum];
+        //playerUIArray = new GameObject[playerNum];
         goldTextArray = new Text[playerNum];
-        float interval = (1 - (maxPlayerNum * playerUIWidth)) / (maxPlayerNum - 1);
+        float interval = (1 - (PlayerNumber.MaxCount * playerUIWidth)) / (PlayerNumber.MaxCount - 1);
         float anchorNum = 0.0f;
 
         for (int i = 0; i < playerNum; ++i)
@@ -45,7 +42,7 @@ public class PlayerUIManager : MonoBehaviour
             GameObject playerUI = Instantiate(playerUIPlafab, transform.position, Quaternion.identity);
             playerUI.transform.SetParent(transform);
             playerUI.name = "PlayerUI" + (i + 1).ToString();
-            playerUIArray[i] = playerUI;
+            //playerUIArray[i] = playerUI;
             goldTextArray[i] = FindChildText(playerUI.transform, "GoldText");
             RectTransform playerUIRectTransform = playerUI.GetComponent<RectTransform>();
 
@@ -63,7 +60,7 @@ public class PlayerUIManager : MonoBehaviour
     /// <summary>
     /// ゴールドのテキストを更新
     /// </summary>
-    void GoldUpdate(int index,int n)
+    public void GoldUpdate(int index, int n)
     {
         goldTextArray[index].text = n.ToString();
     }
@@ -71,9 +68,9 @@ public class PlayerUIManager : MonoBehaviour
     /// <summary>
     /// Textコンポーネントのある子要素を探す
     /// </summary>
-    Text FindChildText(Transform parent,string name)
+    Text FindChildText(Transform parent, string name)
     {
-        foreach(Transform child in parent)
+        foreach (Transform child in parent)
         {
             if (null != child.GetComponent<Text>())
             {
