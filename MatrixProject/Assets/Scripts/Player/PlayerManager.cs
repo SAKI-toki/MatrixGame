@@ -15,12 +15,22 @@ static class PlayerNumber
 /// </summary>
 public class PlayerManager : MonoBehaviour
 {
+    [SerializeField, Tooltip("デバッグ用のプレイヤーの人数")]
+    int debugPlayerNum = 4;
+
     [SerializeField, Tooltip("スクロール")]
     ScrollController scrollController = null;
     [SerializeField, Tooltip("プレイヤーリスト")]
     List<GameObject> playerObjects = new List<GameObject>();
 
     void Awake()
+    {
+#if UNITY_EDITOR
+        PlayerNumber.count = debugPlayerNum;
+#endif
+    }
+
+    void Start()
     {
         for (int i = 0; i < PlayerNumber.count; ++i)
         {

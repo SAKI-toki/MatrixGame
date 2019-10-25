@@ -12,10 +12,13 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     GameObject playerUIPlafab = null;
     Text[] goldTextArray;
+    //既に初期化したかどうか
+    bool alreadyInitialize = false;
 
-    void Awake()
+
+    void Start()
     {
-        PlayerUIGenerator(PlayerNumber.count);
+        Initialize();
     }
 
     void Update()
@@ -23,10 +26,19 @@ public class PlayerUIManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 初期化
+    /// </summary>
+    void Initialize()
+    {
+        if (!alreadyInitialize) PlayerUIGenerator(PlayerNumber.count);
+    }
+
+    /// <summary>
     /// UIの生成
     /// </summary>
     void PlayerUIGenerator(int playerNum)
     {
+        alreadyInitialize = true;
         //playerUIArray = new GameObject[playerNum];
         goldTextArray = new Text[playerNum];
         float interval = (1 - (PlayerNumber.MaxCount * playerUIWidth)) / (PlayerNumber.MaxCount - 1);
@@ -61,6 +73,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void GoldUpdate(int index, int n)
     {
+        if (!alreadyInitialize) PlayerUIGenerator(PlayerNumber.count);
         goldTextArray[index].text = n.ToString();
     }
 
