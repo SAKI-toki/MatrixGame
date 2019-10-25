@@ -69,15 +69,11 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     Text FindChildText(Transform parent, string name)
     {
-        foreach (Transform child in parent)
+        var childTextComponents = parent.GetComponentsInChildren<Text>();
+        foreach (var textComponent in childTextComponents)
         {
-            if (null != child.GetComponent<Text>())
-            {
-                if (child.name == name)
-                {
-                    return child.GetComponent<Text>();
-                }
-            }
+            if (textComponent.name == name)
+                return textComponent;
         }
         return null;
     }
