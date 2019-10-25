@@ -12,10 +12,10 @@ public class ScrollObject : MonoBehaviour, IScrollObject
 
     Vector3 position = Vector3.zero;
 
-    void IScrollObject.Scroll(float scrollValue)
+    void IScrollObject.Scroll(Vector3 scrollValue)
     {
         position = transform.position;
-        position.x += scrollValue * Time.deltaTime;
+        position += scrollValue * Time.deltaTime;
         transform.position = position;
     }
 }

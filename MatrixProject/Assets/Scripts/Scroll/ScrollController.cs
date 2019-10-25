@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public interface IScrollObject
 {
-    void Scroll(float scrollValue);
+    void Scroll(Vector3 scrollValue);
 }
 
 /// <summary>
@@ -18,10 +18,14 @@ public class ScrollController : MonoBehaviour
 
     Vector3 position;
 
+    //スクロールの向き(正規化は必ずする)
+    Vector3 scrollDirection = new Vector3(1, 0, 0);
+
     List<IScrollObject> scrollObjects = new List<IScrollObject>();
 
     void Update()
     {
+        var passScroll = scrollDirection * defaultScrollSpeed * scrollScale;
         for (int i = scrollObjects.Count - 1; i >= 0; --i)
         {
             if (scrollObjects[i] == null)
@@ -30,7 +34,7 @@ public class ScrollController : MonoBehaviour
             }
             else
             {
-                scrollObjects[i].Scroll(defaultScrollSpeed * scrollScale);
+                scrollObjects[i].Scroll(passScroll);
             }
         }
     }
