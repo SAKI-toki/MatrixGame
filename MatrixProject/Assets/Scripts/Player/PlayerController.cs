@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour, IScrollObject
     new Rigidbody rigidbody = null;
     [SerializeField, Tooltip("UIの管理クラス")]
     PlayerUIManager uiManager = null;
+    [SerializeField, Tooltip("アニメーションの制御")]
+    PlayerAnimationController animationController = null;
 
     float velocityX = 0.0f;
 
@@ -50,6 +52,9 @@ public class PlayerController : MonoBehaviour, IScrollObject
         var velocity = rigidbody.velocity;
         velocity.x = velocityX;
         rigidbody.velocity = velocity;
+
+        animationController.SetSpeed(velocityX);
+
         velocityX = 0.0f;
     }
 

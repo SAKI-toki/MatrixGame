@@ -6,16 +6,11 @@ using UnityEngine.UI;
 /// </summary>
 public class PlayerUIManager : MonoBehaviour
 {
-    //[SerializeField]
-    //RectTransform canvasRectTransform = null;
-
     [SerializeField, Range(0.125f, 0.15f)]
     float playerUIWidth = 0.15f;
 
     [SerializeField]
     GameObject playerUIPlafab = null;
-
-    //GameObject[] playerUIArray;
     Text[] goldTextArray;
 
     void Awake()
@@ -39,17 +34,21 @@ public class PlayerUIManager : MonoBehaviour
 
         for (int i = 0; i < playerNum; ++i)
         {
+            //UIの生成
             GameObject playerUI = Instantiate(playerUIPlafab, transform.position, Quaternion.identity);
+            //親をセット
             playerUI.transform.SetParent(transform);
+            //名前をセット
             playerUI.name = "PlayerUI" + (i + 1).ToString();
             //playerUIArray[i] = playerUI;
             goldTextArray[i] = FindChildText(playerUI.transform, "GoldText");
             RectTransform playerUIRectTransform = playerUI.GetComponent<RectTransform>();
 
+            //Transformの初期化
             playerUIRectTransform.localPosition = Vector3.zero;
             playerUIRectTransform.sizeDelta = Vector2.zero;
             playerUIRectTransform.localScale = Vector3.one;
-
+            //アンカーのセット
             playerUIRectTransform.anchorMin = new Vector2(anchorNum, 0);
             anchorNum += playerUIWidth;
             playerUIRectTransform.anchorMax = new Vector2(anchorNum, 1);
