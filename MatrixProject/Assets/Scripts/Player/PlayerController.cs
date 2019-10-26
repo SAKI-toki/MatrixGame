@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour, IScrollObject
     void SetGold(int n)
     {
         gold = n;
-        uiManager.GoldUpdate(playerNumber, gold);
+        uiManager.SetGold(playerNumber, gold);
     }
 
     /// <summary>
@@ -156,6 +156,9 @@ public class PlayerController : MonoBehaviour, IScrollObject
         playerNumber = x;
     }
 
+    /// <summary>
+    /// 所持ゴールドの取得
+    /// </summary>
     public int GetGold()
     {
         return gold;

@@ -11,7 +11,9 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField]
     GameObject playerUIPlafab = null;
-    Text[] goldTextArray;
+
+    UiController[] uiControllers = null;
+
     //既に初期化したかどうか
     bool alreadyInitialize = false;
 
@@ -38,9 +40,10 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     void PlayerUIGenerator(int playerNum)
     {
+        //初期化したのでtrueにする
         alreadyInitialize = true;
-        //playerUIArray = new GameObject[playerNum];
-        goldTextArray = new Text[playerNum];
+        //配列の要素数の確保
+        uiControllers = new UiController[playerNum];
         float interval = (1 - (PlayerNumber.MaxCount * playerUIWidth)) / (PlayerNumber.MaxCount - 1);
         float anchorNum = 0.0f;
 
@@ -52,14 +55,14 @@ public class PlayerUIManager : MonoBehaviour
             playerUI.transform.SetParent(transform);
             //名前をセット
             playerUI.name = "PlayerUI" + (i + 1).ToString();
-            //playerUIArray[i] = playerUI;
-            goldTextArray[i] = FindChildText(playerUI.transform, "GoldText");
-            RectTransform playerUIRectTransform = playerUI.GetComponent<RectTransform>();
+            uiControllers[i] = playerUI.GetComponent<UiController>();
 
             //Transformの初期化
+            RectTransform playerUIRectTransform = playerUI.GetComponent<RectTransform>();
             playerUIRectTransform.localPosition = Vector3.zero;
             playerUIRectTransform.sizeDelta = Vector2.zero;
             playerUIRectTransform.localScale = Vector3.one;
+
             //アンカーのセット
             playerUIRectTransform.anchorMin = new Vector2(anchorNum, 0);
             anchorNum += playerUIWidth;
@@ -71,10 +74,10 @@ public class PlayerUIManager : MonoBehaviour
     /// <summary>
     /// ゴールドのテキストを更新
     /// </summary>
-    public void GoldUpdate(int index, int n)
+    public void SetGold(int index, int n)
     {
         if (!alreadyInitialize) PlayerUIGenerator(PlayerNumber.count);
-        goldTextArray[index].text = n.ToString();
+        uiControllers[index].SetGold(n);
     }
 
     /// <summary>
