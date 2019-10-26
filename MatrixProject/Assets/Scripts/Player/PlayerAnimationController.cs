@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// プレイヤーのアニメーションの制御
+/// </summary>
 public class PlayerAnimationController : MonoBehaviour
 {
     [SerializeField, Tooltip("アニメーター")]

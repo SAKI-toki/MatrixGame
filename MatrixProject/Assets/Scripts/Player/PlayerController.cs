@@ -24,8 +24,10 @@ public class PlayerController : MonoBehaviour, IScrollObject
     [SerializeField, Tooltip("アニメーションの制御")]
     PlayerAnimationController animationController = null;
 
+    //x方向の力
     float velocityX = 0.0f;
 
+    //所持ゴールド
     int gold;
 
     void Start()
