@@ -4,8 +4,11 @@
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour, IScrollObject
+public partial class PlayerController : MonoBehaviour, IScrollObject
 {
+    //ステートの管理クラス
+    PlayerStateManager stateManager = new PlayerStateManager();
+
     [SerializeField, Tooltip("プレイヤーの番号"), Range(0, 3)]
     int playerNumber = 0;
 
@@ -33,31 +36,21 @@ public class PlayerController : MonoBehaviour, IScrollObject
     void Start()
     {
         SetGold(0);
+        stateManager.Init(this, new PlayerMainState());
     }
 
     void Update()
     {
-        if (transform.position.x > moveRange)
-        {
-            var position = transform.position;
-            position.x = moveRange;
-            transform.position = position;
-        }
+        stateManager.Update();
         //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
-        Jump();
-        SideMove();
-    }
-
-    void LateUpdate()
-    {
-        var velocity = rigidbody.velocity;
-        velocity.x = velocityX;
-        rigidbody.velocity = velocity;
-
-        animationController.SetSpeed(velocityX);
 
         velocityX = 0.0f;
+    }
+
+    void OnDestroy()
+    {
+        stateManager.Destroy();
     }
 
     /// <summary>
@@ -95,13 +88,29 @@ public class PlayerController : MonoBehaviour, IScrollObject
         }
     }
 
+    /// <summary>
+    /// 力のセット
+    /// </summary>
+    void SetVelocity()
+    {
+        var velocity = rigidbody.velocity;
+        velocity.x = velocityX;
+        rigidbody.velocity = velocity;
+
+        animationController.SetSpeed(velocityX);
+    }
 
     /// <summary>
-    /// 敵に当たったときの処理
+    /// 範囲内に収める
     /// </summary>
-    void HitEnemy()
+    void FitRange()
     {
-        SetGold(gold / 2);
+        if (transform.position.x > moveRange)
+        {
+            var position = transform.position;
+            position.x = moveRange;
+            transform.position = position;
+        }
     }
 
     /// <summary>
@@ -117,8 +126,8 @@ public class PlayerController : MonoBehaviour, IScrollObject
         //敵と衝突
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            HitEnemy();
-            Destroy(other.gameObject);
+            stateManager.SwitchState(new PlayerHitEnemyState());
+            //Destroy(other.gameObject);
         }
     }
 
