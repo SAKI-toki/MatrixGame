@@ -4,8 +4,11 @@
 /// プレイヤーの制御クラス
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour, IScrollObject
+public partial class PlayerController : MonoBehaviour, IScrollObject
 {
+    //ステートの管理クラス
+    PlayerStateManager stateManager = new PlayerStateManager();
+
     [SerializeField, Tooltip("プレイヤーの番号"), Range(0, 3)]
     int playerNumber = 0;
 
@@ -25,7 +28,8 @@ public class PlayerController : MonoBehaviour, IScrollObject
     PlayerAnimationController animationController = null;
 
     //x方向の力
-    float velocityX = 0.0f;
+    float localVelocityX = 0.0f;
+    float scrollVelocityX = 0.0f;
 
     //所持ゴールド
     int gold;
@@ -33,31 +37,23 @@ public class PlayerController : MonoBehaviour, IScrollObject
     void Start()
     {
         SetGold(0);
+        stateManager.Init(this, new PlayerMainState());
     }
 
     void Update()
     {
-        if (transform.position.x > moveRange)
-        {
-            var position = transform.position;
-            position.x = moveRange;
-            transform.position = position;
-        }
+        FitRange();
+
+        stateManager.Update();
         //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
-        Jump();
-        SideMove();
+
+        localVelocityX = 0.0f;
     }
 
-    void LateUpdate()
+    void OnDestroy()
     {
-        var velocity = rigidbody.velocity;
-        velocity.x = velocityX;
-        rigidbody.velocity = velocity;
-
-        animationController.SetSpeed(velocityX);
-
-        velocityX = 0.0f;
+        stateManager.Destroy();
     }
 
     /// <summary>
@@ -86,22 +82,55 @@ public class PlayerController : MonoBehaviour, IScrollObject
         //減速
         if (l)
         {
-            velocityX -= sideMoveSpeed;
+            localVelocityX = -sideMoveSpeed;
         }
         //加速
         else //if(r)
         {
-            velocityX += sideMoveSpeed;
+            localVelocityX = sideMoveSpeed;
         }
     }
 
+    /// <summary>
+    /// 力のセット
+    /// </summary>
+    void SetVelocity(Vector3 velocity)
+    {
+        rigidbody.velocity = velocity;
+        animationController.SetSpeed(velocity.x);
+    }
 
     /// <summary>
-    /// 敵に当たったときの処理
+    /// スクロールのみの力のセット
     /// </summary>
-    void HitEnemy()
+    void SetVelocityScrollOnly()
     {
-        SetGold(gold / 2);
+        var velocity = rigidbody.velocity;
+        velocity.x = scrollVelocityX;
+        SetVelocity(velocity);
+    }
+
+    /// <summary>
+    /// 力の通常のセット
+    /// </summary>
+    void SetDefaultVelocity()
+    {
+        var velocity = rigidbody.velocity;
+        velocity.x = localVelocityX + scrollVelocityX;
+        SetVelocity(velocity);
+    }
+
+    /// <summary>
+    /// 範囲内に収める
+    /// </summary>
+    void FitRange()
+    {
+        if (transform.position.x > moveRange)
+        {
+            var position = transform.position;
+            position.x = moveRange;
+            transform.position = position;
+        }
     }
 
     /// <summary>
@@ -117,8 +146,8 @@ public class PlayerController : MonoBehaviour, IScrollObject
         //敵と衝突
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            HitEnemy();
-            Destroy(other.gameObject);
+            stateManager.SwitchState(new PlayerHitEnemyState());
+            //Destroy(other.gameObject);
         }
     }
 
@@ -137,7 +166,7 @@ public class PlayerController : MonoBehaviour, IScrollObject
     /// </summary>
     void IScrollObject.Scroll(Vector3 scrollValue)
     {
-        velocityX += scrollValue.x;
+        scrollVelocityX = scrollValue.x;
         moveRange += scrollValue.x * Time.deltaTime;
     }
 
