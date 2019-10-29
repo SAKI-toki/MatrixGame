@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 42ae05ee9c75e67428d8df47e848b965
+guid: 8f7041f775bb52743b3640178ef15d98
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -105,16 +105,11 @@ ModelImporter:
     400096: toe.R_end
     400098: upper_arm.L
     400100: upper_arm.R
-    2100000: palette
+    2100000: No Name
     4300000: Knight_R
     9500000: //RootNode
     13700000: Knight_R
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: palette
-    second: {fileID: 2100000, guid: cc3d9fe8d97060246829152656acfc8f, type: 2}
+  externalObjects: {}
   materials:
     importMaterials: 1
     materialName: 0
@@ -221,7 +216,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: foot.L
+    - boneName: heel.L
       humanName: LeftFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -229,7 +224,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: foot.R
+    - boneName: heel.R
       humanName: RightFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -333,14 +328,30 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: heel.02.L
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: heel.02.R
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     skeleton:
-    - name: Knight_R(Clone)
+    - name: Knight(Clone)
       parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: armature
-      parentName: Knight_R(Clone)
+      parentName: Knight(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
       scale: {x: 100, y: 100, z: 100}
@@ -585,9 +596,9 @@ ModelImporter:
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Knight_R
-      parentName: Knight_R(Clone)
+      parentName: Knight(Clone)
       position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0.000000081460335, y: 0, z: -0, w: 1}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
       scale: {x: 100, y: 100, z: 100}
     armTwist: 0.5
     foreArmTwist: 0.5
