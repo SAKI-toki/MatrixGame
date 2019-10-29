@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public partial class PlayerController
+﻿public partial class PlayerController
 {
     /// <summary>
     /// プレイヤーのステートのインターフェース

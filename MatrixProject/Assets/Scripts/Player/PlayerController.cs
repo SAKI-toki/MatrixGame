@@ -28,7 +28,8 @@ public partial class PlayerController : MonoBehaviour, IScrollObject
     PlayerAnimationController animationController = null;
 
     //x方向の力
-    float velocityX = 0.0f;
+    float localVelocityX = 0.0f;
+    float scrollVelocityX = 0.0f;
 
     //所持ゴールド
     int gold;
@@ -41,11 +42,13 @@ public partial class PlayerController : MonoBehaviour, IScrollObject
 
     void Update()
     {
+        FitRange();
+
         stateManager.Update();
         //常に下に重力をPhysicsのデフォルトとは別に追加する
         rigidbody.AddForce(Vector3.up * -gravityPower);
 
-        velocityX = 0.0f;
+        localVelocityX = 0.0f;
     }
 
     void OnDestroy()
@@ -79,25 +82,42 @@ public partial class PlayerController : MonoBehaviour, IScrollObject
         //減速
         if (l)
         {
-            velocityX -= sideMoveSpeed;
+            localVelocityX = -sideMoveSpeed;
         }
         //加速
         else //if(r)
         {
-            velocityX += sideMoveSpeed;
+            localVelocityX = sideMoveSpeed;
         }
     }
 
     /// <summary>
     /// 力のセット
     /// </summary>
-    void SetVelocity()
+    void SetVelocity(Vector3 velocity)
+    {
+        rigidbody.velocity = velocity;
+        animationController.SetSpeed(velocity.x);
+    }
+
+    /// <summary>
+    /// スクロールのみの力のセット
+    /// </summary>
+    void SetVelocityScrollOnly()
     {
         var velocity = rigidbody.velocity;
-        velocity.x = velocityX;
-        rigidbody.velocity = velocity;
+        velocity.x = scrollVelocityX;
+        SetVelocity(velocity);
+    }
 
-        animationController.SetSpeed(velocityX);
+    /// <summary>
+    /// 力の通常のセット
+    /// </summary>
+    void SetDefaultVelocity()
+    {
+        var velocity = rigidbody.velocity;
+        velocity.x = localVelocityX + scrollVelocityX;
+        SetVelocity(velocity);
     }
 
     /// <summary>
@@ -146,7 +166,7 @@ public partial class PlayerController : MonoBehaviour, IScrollObject
     /// </summary>
     void IScrollObject.Scroll(Vector3 scrollValue)
     {
-        velocityX += scrollValue.x;
+        scrollVelocityX = scrollValue.x;
         moveRange += scrollValue.x * Time.deltaTime;
     }
 

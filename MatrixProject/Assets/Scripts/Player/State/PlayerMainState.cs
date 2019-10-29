@@ -16,7 +16,7 @@ public partial class PlayerController
             playerController.FitRange();
             playerController.Jump();
             playerController.SideMove();
-            playerController.SetVelocity();
+            playerController.SetDefaultVelocity();
             return this;
         }
 

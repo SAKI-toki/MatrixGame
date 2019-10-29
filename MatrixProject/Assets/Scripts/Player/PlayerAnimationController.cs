@@ -13,7 +13,6 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     public void SetSpeed(float speed)
     {
-        var animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
         animator.speed = speed;
     }
 }

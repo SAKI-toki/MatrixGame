@@ -26,12 +26,12 @@ public partial class PlayerController
 
         IPlayerState IPlayerState.Update(PlayerController playerController)
         {
-            playerController.FitRange();
+            timeCount += Time.deltaTime;
+
             playerController.Jump();
             playerController.SideMove();
-            playerController.SetVelocity();
+            playerController.SetDefaultVelocity();
 
-            timeCount += Time.deltaTime;
             //サインカーブでオンオフを切り替える
             FlashMesh(Mathf.Sin(timeCount * 10 * playerController.flashSpeed) > 0);
             //クールタイム過ぎたらメインステートの戻す
